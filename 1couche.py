@@ -3,14 +3,33 @@ import numpy as np
 
 class NeuronneFactice:
 
-    def __init__(self,neuronnes):
-        self.neuronnes = neuronnes # [4,3,2] par exemple
-        self.poids = [[[ np.random.uniform(-np.sqrt(6/self.neuronnes[i]),np.sqrt(6/self.neuronnes[i])) for _ in range(neuronnes[i+1])] for _ in range(neuronnes[i])] for i in range(len(neuronnes)-1)]
-        self.biais = [[1 for _ in range(neuronnes[i])] for i in range(1,len(neuronnes)-1)]
+    def __init__(self, neuronnes, app, inputs):
+        self.neuronnes = neuronnes
+        self.app = app
+        self.input = np.array(inputs).reshape(1, -1)
+        self.poids = []
+        self.biais = []
+        for i in range(len(neuronnes) - 1):
+            n = neuronnes[i]
+            n_plus_un = neuronnes[i + 1]
+            W = np.random.uniform(-np.sqrt(6 / n), np.sqrt(6 / n), size=(n, n_plus_un))
+            self.poids.append(W)
+            B = np.zeros((1, n_plus_un))
+            self.biais.append(B)
+
+    def feedforward(self):
+        activation = self.input
+        resultat = [activation]
+        for i in range(len(self.poids)):
+            w = self.poids[i]
+            b = self.biais[i]
+            z = np.dot(activation, w) + b
+            activation = self.sigmoid(z)
+            resultat.append(activation)
+        return resultat
 
 
-
-    def feedforward(self, nombres, poids, biais, fonction):
+    def feedforwardneur(self, nombres, poids, biais, fonction):
         x = 0
         for i in range(len(nombres)):
             x += nombres[i] * poids[i]
@@ -37,7 +56,8 @@ class NeuronneFactice:
         return cout
 
     def backwardpropagation(self):
-    
+        #w[n][i][j] = w[n][i][j] + self.app * resultat[n][i] * delta[n][j]
+
         pass
 
     def softmax(self,liste):
@@ -48,9 +68,6 @@ class NeuronneFactice:
             liste[i] = liste[i]/somme
 
 
-class Neuronne():
-    def __init__(self,nb_entree,nb_neuronnes):
-        self.nb_entree=nb_entree
-        self.nb_neuronnes=nb_neuronnes
-        self.poids=[[(np.random.uniform(-np.sqrt(6/self.nb_entree),np.sqrt(6/self.nb_entree))) for _ in range(self.nb)]]
-
+inputs = [0.5, -1.2]
+perc = NeuronneFactice([2, 3, 1], None, inputs)
+resultats = perc.feedforward()
